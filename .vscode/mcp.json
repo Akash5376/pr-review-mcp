@@ -1,0 +1,14 @@
+{
+	"servers": {
+		"git-pr-review-mcp-server": {
+			"type": "stdio",
+			"command": "dotnet",
+			"args": [
+				"run",
+				"--project",
+				"/workspaces/pr-review-mcp/github-pr-review-mcp/github-pr-review-mcp.csproj"
+			]
+		}
+	},
+	"inputs": []
+}
