@@ -42,4 +42,13 @@ builder.Services
     .WithToolsFromAssembly();
 
 await builder.Build().RunAsync();
+// var app = builder.Build();
 
+// var gitService = app.Services.GetRequiredService<GitApiService>();
+
+// var result = await gitService.GetAllPullRequestsAsync("dotnet-codespaces");
+
+// Console.WriteLine(result.ToList());
+
+// // comment this if you only want test run
+// return;
