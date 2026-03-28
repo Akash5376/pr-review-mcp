@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("github-pr-review-mcp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fe3108b9400ded5b8ed228ce27f517dcb8c4eb15")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7edb221823cd7bc3d2813a51f1c92ba9e08a045d")]
 [assembly: System.Reflection.AssemblyProductAttribute("github-pr-review-mcp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("github-pr-review-mcp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

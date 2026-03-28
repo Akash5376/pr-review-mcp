@@ -29,7 +29,7 @@ public class GitApiService
        
     }
 
-    public async Task<string> GetRepositoryListAsync()
+    public async Task<List<Repository>> GetRepositoryListAsync()
     {
         try
         {
@@ -42,51 +42,60 @@ public class GitApiService
             client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
             client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
 
-            var url = $"{_baseUrl}/orgs/{_gitOwner}/repos";
+            var url = $"{_baseUrl}/users/{_gitOwner}/repos";
 
             var response = await client.GetAsync(url);
-            var body = await response.Content.ReadAsStringAsync();
-
             response.EnsureSuccessStatusCode();
-            return body;
+
+            var stream = await response.Content.ReadAsStreamAsync();
+
+            var result = await JsonSerializer.DeserializeAsync<List<Repository>>(stream, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+            return result ?? new List<Repository>();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching repository list: {ex.Message}");
-            return $"Error fetching repository list: {ex.Message}";
+            return new List<Repository>();
         }
     }
 
 
-    public async Task<string> GetAllPullRequestsAsync()
-{
-    try
+    public async Task<List<PullRequest>> GetAllPullRequestsAsync(string repoName)
     {
-        var client = _httpClientFactory.CreateClient();
+        try
+        {
+            var client = _httpClientFactory.CreateClient();
 
-        client.DefaultRequestHeaders.Authorization =
+            client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _gitAPIKey);
 
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("github-pr-review-mcp");
-        client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github.full+json");
-        client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("github-pr-review-mcp");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github.full+json");
+            client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
 
-        var url = $"{_baseUrl}/repos/{_gitOwner}/{_repoName}/pulls";
+            var url = $"{_baseUrl}/repos/{_gitOwner}/{repoName}/pulls";
 
-        var response = await client.GetAsync(url);
-        var body = await response.Content.ReadAsStringAsync();
-
-        response.EnsureSuccessStatusCode();
-        return body;
+            var response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            Console.WriteLine(response);    
+            var stream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<List<PullRequest>>(stream, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+            return result ?? new List<PullRequest>();           
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching pull requests: {ex.Message}");
+            return new List<PullRequest>();
+        }
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error fetching pull requests: {ex.Message}");
-        return $"Error fetching pull requests: {ex}";
-    }
-}
 
-    public async Task<string> GetPullRequestDetailsAsync(int pullRequestNumber)
+    public async Task<List<PullRequestFile>> GetPullRequestDetailsAsync(int pullRequestNumber)
     {
         try
         {
@@ -102,15 +111,20 @@ public class GitApiService
             var url = $"{_baseUrl}/repos/{_gitOwner}/{_repoName}/pulls/{pullRequestNumber}/files";
 
              var response = await client.GetAsync(url);
-             var body = await response.Content.ReadAsStringAsync();
+                 response.EnsureSuccessStatusCode();
 
-            response.EnsureSuccessStatusCode();
-            return body;
+            var stream = await response.Content.ReadAsStreamAsync();
+
+            return await JsonSerializer.DeserializeAsync<List<PullRequestFile>>(stream,
+                new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }) ?? new List<PullRequestFile>();
         }
         catch (Exception ex)
         {
            Console.WriteLine($"Error fetching pull request details: {ex.Message}");
-           return $"Error fetching pull request details: {ex.Message}";
+           return new List<PullRequestFile>();
         }
 
 
